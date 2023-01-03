@@ -1,6 +1,8 @@
 import express from 'express'
 import mongoose from "mongoose"
+import { createTodo, getTodo, removeTodo } from './controllers/TodoController.js'
 import { login, register } from './controllers/UserController.js'
+import { checkAuth } from './utils/checkAuth.js'
 
 const port = 5000
 const app = express()
@@ -13,6 +15,10 @@ mongoose.connect('mongodb+srv://myName:qazzaq12345@cluster0.0qnzfyg.mongodb.net/
 
 app.post('/register', register)
 app.post('/login', login)
+
+app.post('/todos', checkAuth, createTodo)
+app.get('/todos', checkAuth, getTodo)
+app.delete('/todos/:id', checkAuth, removeTodo)
 
 
 app.listen(port, () => {

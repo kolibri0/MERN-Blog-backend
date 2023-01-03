@@ -40,7 +40,7 @@ export const login = async (req, res) => {
         const user = await UserModel.findOne({email: req.body.email})
         if(!user){
             return res.status(404).json({
-                msg: 'user not found'
+                msg: 'User not found'
             })
         }
         const isValidPass = await bcrypt.compare(req.body.password, user._doc.password)
@@ -66,7 +66,7 @@ export const login = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({
-            message: "Failed to login"
+            msg: "Failed to login"
         })
     }
 }
