@@ -70,3 +70,23 @@ export const login = async (req, res) => {
         })
     }
 }
+
+export const checkMe = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.user._id)
+        if(!user){
+            return res.status(404).json({
+                msg: 'User not found'
+            })
+        }
+        const {password, ...userData} = user._doc
+
+        res.json({
+            ...userData,
+        })
+    } catch (err) {
+        res.json({
+            msg: 'server error'
+        })
+    }
+}

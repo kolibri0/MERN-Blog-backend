@@ -38,13 +38,19 @@ export const getTodo = async (req, res) => {
 }
 
 export const removeTodo = async (req, res) => {
-    const id = req.params.id
-
-    TodoModel.findOneAndDelete({
-        _id: id
-    })
-
-    res.json({
-        succes: true
-    })
+    try {
+        const id = req.params.id
+        const todos = await TodoModel.find({user: req.user._id})
+        await TodoModel.findOneAndDelete({
+            _id: id
+        })
+        res.json({
+            success: true,
+            todos
+        })
+    } catch (err) {
+        res.status(500).json({
+            msg: "can't delete todo"
+        })
+    }
 }
