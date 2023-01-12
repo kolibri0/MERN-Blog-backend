@@ -5,6 +5,8 @@ import { createTodo, getTodo, removeTodo } from './controllers/TodoController.js
 import { checkMe, login, register } from './controllers/UserController.js'
 import { checkAuth } from './utils/checkAuth.js'
 import { changeNote, createNote, getAll, getOne, removeNote } from './controllers/NoteController.js'
+import { changePost, createPost, getAllPosts, getMyPosts, getOnePost, removePost } from './controllers/PostController.js'
+import { createComment } from './controllers/CommentController.js'
 
 const port = 5000
 const app = express()
@@ -29,6 +31,18 @@ app.get('/note/:id', checkAuth, getOne)
 app.post('/note', checkAuth, createNote)
 app.patch('/note/:id', checkAuth, changeNote)
 app.delete('/note/:id', checkAuth, removeNote)
+
+app.get('/posts', checkAuth, getAllPosts)
+app.get('/posts/my', checkAuth, getMyPosts)
+app.get('/posts/:id', checkAuth, getOnePost)
+app.post('/posts', checkAuth, createPost)
+app.patch('/posts/:id', checkAuth, changePost)
+app.delete('/posts/:id', checkAuth, removePost)
+
+
+// app.patch('/comment/:id', checkAuth, createComment)
+app.post('/comment/:id', checkAuth, createComment)
+
 
 
 app.listen(port, () => {

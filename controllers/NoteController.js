@@ -16,7 +16,8 @@ export const createNote = async (req, res) => {
         const note = await doc.save()
     
         res.json({
-            note
+            note,
+            success: true
         })
     } catch (err) {
         res.status(500).json({
