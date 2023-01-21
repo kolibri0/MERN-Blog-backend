@@ -1,9 +1,10 @@
 import PostModel from '../models/Post.js'
+import CommentModel from '../models/Coment.js'
 
 
 export const getAllPosts = async (req, res) => {
     try {
-        const posts = await PostModel.find()
+        const posts = await PostModel.find().populate('user', 'name')
 
         res.json({
             posts,
@@ -34,14 +35,35 @@ export const getMyPosts = async (req, res) => {
 export const getOnePost = async (req, res) => {
     try {
         const id = req.params.id
-        const post = await PostModel.findOne({
-            _id: id
-        })
+        // const post = await PostModel.findOne({
+        //     _id: id
+        // }).populate('user', 'name')
 
-        res.json({
-            post,
-            success: true
-        })
+        // res.json({
+        //     post,
+        //     success: true
+        // })
+         PostModel.findOneAndUpdate({
+            _id: id
+        },{
+            $inc: {views: 1}
+        },{
+            returnDocument: 'after'
+        }, (err, doc) => {
+            if(err){
+                return res.status(500).json({
+                    msg: 'Error get post'
+                })
+            }
+            if(!doc){
+                return res.status(404).json({
+                    msg: 'Post not found'
+                })
+            }
+            res.json({
+                post: doc
+            })
+        }).populate('user', 'name')
     } catch (err) {
         res.status(500).json({
             msg: 'Failed get post'
@@ -55,6 +77,7 @@ export const createPost = async (req, res) => {
             title: req.body.title,
             text: req.body.text,
             user: req.user._id,
+            tags: req.body.tags,
             imgUrl: req.body.imgUrl,
         })
     
@@ -86,6 +109,7 @@ export const changePost = async (req, res) => {
             title: req.body.title,
             text: req.body.text,
             user: req.user._id,
+            tags: req.body.tags,
             imgUrl: req.body.imgUrl
         },
         {
@@ -128,6 +152,46 @@ export const removePost = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             msg: 'Failed get post'
+        })
+    }
+}
+
+export const getPostsByTags = async (req, res) => {
+    try {
+
+        const param = req.params.param
+
+        const data = await PostModel.find().populate('user', 'name')
+
+        let posts = []
+
+        data.map((post) =>  post.tags.includes(param)? posts.push(post) : null)
+
+        res.json({
+            posts,
+            success: true
+        })
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Failed get tags'
+        })
+    }
+}
+
+export const getTags = async (req, res) => {
+    try {
+        const posts = await PostModel.find().limit(9).exec()
+        const data = posts.map(post => post.tags).flat().slice(0, 9)
+        const set = new Set(data)
+        const tags = [...set]
+
+        res.json({
+            tags,
+            success: true
+        })
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Failed get tags'
         })
     }
 }

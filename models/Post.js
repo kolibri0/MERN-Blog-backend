@@ -14,18 +14,15 @@ const PostSchema = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: 'User'
         },
-        // imgUrl:{
-        //     type: String,
-        //     default: ''
-        // },
+        tags: {
+            type: Array,
+            default: []
+        },
         imgUrl: String,
         comments:[
             {
-                text: String,
-                user:{
-                    type:  mongoose.Types.ObjectId,
-                    ref: 'User'
-                }
+                type: mongoose.Types.ObjectId,
+                ref: 'Comment'
             }
         ],
         views: {
