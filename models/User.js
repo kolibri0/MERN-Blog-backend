@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        color: {
+            type: String,
+            default: 'black'
+        },
     },
     {
         timestamps: true,

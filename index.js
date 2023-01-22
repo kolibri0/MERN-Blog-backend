@@ -2,10 +2,10 @@ import express from 'express'
 import mongoose from "mongoose"
 import cors from 'cors'
 import { createTodo, getTodo, removeTodo } from './controllers/TodoController.js'
-import { checkMe, login, register } from './controllers/UserController.js'
+import { changeMe, checkMe, getUser, login, register } from './controllers/UserController.js'
 import { checkAuth } from './utils/checkAuth.js'
 import { changeNote, createNote, getAll, getOne, removeNote } from './controllers/NoteController.js'
-import { changePost, createPost, getAllPosts, getMyPosts, getOnePost, getPostsByTags, getTags, removePost } from './controllers/PostController.js'
+import { changePost, createPost, getAllPosts, getMyPosts, getNewPosts, getOnePost, getPopularPosts, getPostsByTags, getTags, getUserPosts, removePost } from './controllers/PostController.js'
 import { changeComment, createComment, deleteComment, getCommentsByPostId } from './controllers/CommentController.js'
 import multer from 'multer'
 
@@ -35,11 +35,17 @@ app.post('/register', register)
 app.post('/login', login)
 app.get('/me', checkAuth, checkMe)
 
+
+
 app.post('/uploads', checkAuth, upload.single('image'), (req, res) => {
     res.json({
         url: `/uploads/${req.file.originalname}`,
     })
 })
+
+app.patch('/user/:id', checkAuth, changeMe )
+app.get('/user/:id', checkAuth, getUser )
+app.get('/user/posts/:id', checkAuth, getUserPosts )
 
 app.post('/todos', checkAuth,  createTodo)
 app.get('/todos', checkAuth, getTodo)
@@ -52,6 +58,8 @@ app.patch('/note/:id', checkAuth, changeNote)
 app.delete('/note/:id', checkAuth, removeNote)
 
 app.get('/posts', getAllPosts)
+app.get('/posts/new', getNewPosts)
+app.get('/posts/popular', getPopularPosts)
 app.get('/posts/my', checkAuth, getMyPosts)
 app.get('/posts/:id', checkAuth, getOnePost)
 app.post('/posts', checkAuth, createPost)
@@ -59,7 +67,7 @@ app.patch('/posts/:id', checkAuth, changePost)
 app.delete('/posts/:id', checkAuth, removePost)
 
 app.get('/posts/params/:param', getPostsByTags)
-app.get('/tags', getTags)
+app.get('/tags/:count', getTags)
 
 app.delete('/posts/:postId/comments/:commentId', checkAuth, deleteComment)
 app.patch('/comments/:id', checkAuth, changeComment)

@@ -90,3 +90,60 @@ export const checkMe = async (req, res) => {
         })
     }
 }
+export const changeMe = async (req, res) => {
+    try {
+        UserModel.findByIdAndUpdate({
+            _id: req.params.id
+        },{   
+            name: req.body.name,
+            color: req.body.color
+        },
+        {
+            returnDocument: 'after'
+        },
+        (err, doc) => {
+            if(err){
+                return res.status(500).json({
+                    msg: "can't change user"
+                })
+            }
+            if(!doc){
+                return res.status(404).json({
+                    msg: "can't get User"
+                })
+            }
+            const {password, ...userData} = doc._doc
+            res.json({
+                ...userData,
+                success: true
+            })
+        })
+        
+    } catch (err) {
+        res.json({
+            msg: 'server error'
+        })
+    }
+}
+
+export const getUser = async (req, res) => {
+    try {
+        const id = req.params.id
+
+        const user = await UserModel.findById(id)
+        if(!user){
+            return res.status(404).json({
+                msg: 'User not found'
+            })
+        }
+        const {password, email, __v, ...userData} = user._doc
+
+        res.json({
+            ...userData,
+        })
+    } catch (err) {
+        res.json({
+            msg: 'server error'
+        })
+    }
+}

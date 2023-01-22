@@ -4,7 +4,37 @@ import CommentModel from '../models/Coment.js'
 
 export const getAllPosts = async (req, res) => {
     try {
-        const posts = await PostModel.find().populate('user', 'name')
+        const posts = await PostModel.find().populate({path: 'user', select: ['name', 'color']})
+
+        res.json({
+            posts,
+            success: true
+        })
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Failed get posts'
+        })
+    }
+}
+
+export const getNewPosts = async (req, res) => {
+    try {
+        const posts = await PostModel.find().populate({path: 'user', select: ['name', 'color']}).sort({_id:-1})
+
+        res.json({
+            posts,
+            success: true
+        })
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Failed get posts'
+        })
+    }
+}
+
+export const getPopularPosts = async (req, res) => {
+    try {
+        const posts = await PostModel.find().populate({path: 'user', select: ['name', 'color']}).sort({views:-1})
 
         res.json({
             posts,
@@ -32,17 +62,24 @@ export const getMyPosts = async (req, res) => {
     }
 }
 
+export const getUserPosts = async (req, res) => {
+    try {
+        const posts = await PostModel.find({user: req.params.id}).populate({path: 'user', select: ['name', 'color']})
+
+        res.json({
+            posts,
+            success: true
+        })
+    } catch (err) {
+        res.status(500).json({
+            msg: 'Failed get posts'
+        })
+    }
+}
+
 export const getOnePost = async (req, res) => {
     try {
         const id = req.params.id
-        // const post = await PostModel.findOne({
-        //     _id: id
-        // }).populate('user', 'name')
-
-        // res.json({
-        //     post,
-        //     success: true
-        // })
          PostModel.findOneAndUpdate({
             _id: id
         },{
@@ -63,7 +100,7 @@ export const getOnePost = async (req, res) => {
             res.json({
                 post: doc
             })
-        }).populate('user', 'name')
+        }).populate({path: 'user', select: ['name', 'color']})
     } catch (err) {
         res.status(500).json({
             msg: 'Failed get post'
@@ -180,8 +217,9 @@ export const getPostsByTags = async (req, res) => {
 
 export const getTags = async (req, res) => {
     try {
-        const posts = await PostModel.find().limit(9).exec()
-        const data = posts.map(post => post.tags).flat().slice(0, 9)
+        const count = req.params.count
+        const posts = await PostModel.find().limit(count).exec()
+        const data = posts.map(post => post.tags).flat().slice(0, count)
         const set = new Set(data)
         const tags = [...set]
 
