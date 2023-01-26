@@ -10,7 +10,7 @@ export const checkAuth = async (req, res, next) =>{
         })
     }
 
-    const decoded = jwt.verify(token, 'key')
+    const decoded = jwt.verify(token, process.env.KEY_FOR_REGISTER)
     req.user = await UserModel.findById(decoded)
     next()
 }

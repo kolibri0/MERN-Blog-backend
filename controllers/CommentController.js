@@ -38,7 +38,7 @@ export const getCommentsByPostId = async (req, res) => {
     const post = await PostModel.findById(postId)
 
     const list = await Promise.all(post?.comments.map((commentId) => {
-        return CommentModel.findById(commentId).populate('user', 'name')
+        return CommentModel.findById(commentId).populate('user', 'name').populate({path: 'user', select: ['name', 'color']})
     }))
 
     res.json({

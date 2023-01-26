@@ -8,8 +8,11 @@ import { changeNote, createNote, getAll, getOne, removeNote } from './controller
 import { changePost, createPost, getAllPosts, getMyPosts, getNewPosts, getOnePost, getPopularPosts, getPostsByTags, getTags, getUserPosts, removePost } from './controllers/PostController.js'
 import { changeComment, createComment, deleteComment, getCommentsByPostId } from './controllers/CommentController.js'
 import multer from 'multer'
+// import env from 'process'
+import * as dotenv from 'dotenv'
 
-const port = 5000
+dotenv.config()
+const port = process.env.PORT
 const app = express()
 
 const storage = multer.diskStorage({
@@ -27,7 +30,7 @@ app.use(express.json())
 app.use('/uploads', express.static("uploads"))
 app.use(cors())
 
-mongoose.connect('mongodb+srv://myName:qazzaq12345@cluster0.0qnzfyg.mongodb.net/my-project?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGO_DB_URL)
 .then(() => console.log('DB ok'))
 .catch((err) => console.log("DB err", err))
 

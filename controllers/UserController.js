@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 
 export const register = async (req, res) =>{
     try {
+
         const userPassword = req.body.password
         const salt = await bcrypt.genSalt(10)
         const hash = await bcrypt.hash(userPassword, salt)
@@ -15,9 +16,15 @@ export const register = async (req, res) =>{
         })
         const user = await doc.save()
 
+        if(!user){
+            res.json({
+                message: "Failed to create user"
+            })
+        }
+
         const token = jwt.sign({
             _id: user._id
-        }, 'key',
+        }, process.env.KEY_FOR_REGISTER,
         {
             expiresIn: '30d'
         })
@@ -34,7 +41,6 @@ export const register = async (req, res) =>{
         })
     }
 }
-
 export const login = async (req, res) => {
     try {
         const user = await UserModel.findOne({email: req.body.email})
@@ -52,7 +58,7 @@ export const login = async (req, res) => {
         }
         const token = jwt.sign({
             _id: user._id
-        }, 'key',
+        }, process.env.KEY_FOR_REGISTER,
         {
             expiresIn: '30d'
         })
