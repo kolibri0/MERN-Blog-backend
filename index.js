@@ -47,15 +47,15 @@ app.post('/uploads', checkAuth, upload.single('image'), (req, res) => {
 })
 
 app.patch('/user/:id', checkAuth, changeMe )
-app.get('/user/:id', checkAuth, getUser )
-app.get('/user/posts/:id', checkAuth, getUserPosts )
+app.get('/user/:id', getUser )
+app.get('/user/posts/:id', getUserPosts )
 
 app.post('/todos', checkAuth,  createTodo)
 app.get('/todos', checkAuth, getTodo)
 app.delete('/todos/:id', checkAuth, removeTodo)
 
 app.get('/note', checkAuth, getAll)
-app.get('/note/:id', checkAuth, getOne)
+app.get('/note/:id', getOne)
 app.post('/note', checkAuth, createNote)
 app.patch('/note/:id', checkAuth, changeNote)
 app.delete('/note/:id', checkAuth, removeNote)
@@ -63,19 +63,21 @@ app.delete('/note/:id', checkAuth, removeNote)
 app.get('/posts', getAllPosts)
 app.get('/posts/new', getNewPosts)
 app.get('/posts/popular', getPopularPosts)
-app.get('/posts/my', checkAuth, getMyPosts)
-app.get('/posts/:id', checkAuth, getOnePost)
+// app.get('/posts/my', checkAuth, getMyPosts)
+
+app.get('/posts/:id', getOnePost)
+
 app.post('/posts', checkAuth, createPost)
 app.patch('/posts/:id', checkAuth, changePost)
 app.delete('/posts/:id', checkAuth, removePost)
 
 app.get('/posts/params/:param', getPostsByTags)
-app.get('/tags/:count', getTags)
+app.get('/tags', getTags)
 
 app.delete('/posts/:postId/comments/:commentId', checkAuth, deleteComment)
 app.patch('/comments/:id', checkAuth, changeComment)
 app.post('/comments/:id', checkAuth, createComment)
-app.get('/comments/:id', checkAuth, getCommentsByPostId)
+app.get('/comments/:id', getCommentsByPostId)
 
 
 

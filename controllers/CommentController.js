@@ -22,7 +22,8 @@ export const createComment = async (req, res) => {
        }
       
        res.json({
-        success: true
+        success: true,
+        comment
        })
     } catch (err) {
         console.log(err)

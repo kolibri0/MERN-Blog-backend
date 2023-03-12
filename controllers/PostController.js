@@ -217,9 +217,8 @@ export const getPostsByTags = async (req, res) => {
 
 export const getTags = async (req, res) => {
     try {
-        const count = req.params.count
-        const posts = await PostModel.find().limit(count).exec()
-        const data = posts.map(post => post.tags).flat().slice(0, count)
+        const posts = await PostModel.find().limit(20).exec()
+        const data = posts.map(post => post.tags).flat().slice(0, 20)
         const set = new Set(data)
         const tags = [...set]
 
