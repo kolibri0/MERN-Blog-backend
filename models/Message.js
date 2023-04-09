@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
 
-const NoteSchema = new mongoose.Schema(
+const MessageSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true
-    },
     text: {
       type: String,
       required: true
@@ -13,10 +9,14 @@ const NoteSchema = new mongoose.Schema(
     user: {
       type: mongoose.Types.ObjectId,
       ref: 'User'
+    },
+    roomId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Chat'
     }
   },
   {
     timestamps: true,
   }
 )
-export default mongoose.model('Note', NoteSchema)
+export default mongoose.model('Message', MessageSchema)
