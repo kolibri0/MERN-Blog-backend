@@ -1,7 +1,6 @@
 import express from 'express'
 import mongoose from "mongoose"
 import cors from 'cors'
-import { createTodo, getTodo, removeTodo } from './controllers/TodoController.js'
 import { changeMe, checkMe, getUser, login, register } from './controllers/UserController.js'
 import { checkAuth } from './utils/checkAuth.js'
 import { changeNote, createNote, getAll, getOne, removeNote } from './controllers/NoteController.js'
@@ -12,10 +11,68 @@ import multer from 'multer'
 import * as dotenv from 'dotenv'
 import { createChat, getUserChat } from './controllers/ChatController.js'
 import { createMsg, getMsgs } from './controllers/MSGController.js'
+import { Server } from "socket.io"
+
+
+import MessageModel from './models/Message.js'
+
+// getMsgs
 
 dotenv.config()
 const port = process.env.PORT
 const app = express()
+
+
+const server = app.listen(port, () => {
+  console.log(`Server listen on ${port} port`)
+})
+
+export let text;
+
+const io = new Server(server
+  , {
+    cors: {
+      origin: "*"
+    }
+  }
+)
+
+io.on('connection', socket => {
+  //-----------------------------------------------------------------------------------------------------------------//
+  socket.on("get-room-messages", async ({ roomId }) => {
+    const messages = await MessageModel.find({
+      roomId: roomId
+    })
+    socket.emit('output-room-message', messages)
+  })
+  //-----------------------------------------------------------------------------------------------------------------//
+  socket.on('join', ({ roomId }) => {
+    socket.join(roomId)
+
+  })
+  // socket.on('leave', ({ roomId }) => {
+  //   socket.join(roomId)
+  // })
+  //-----------------------------------------------------------------------------------------------------------------//
+  socket.on('send-message', async ({ roomId, text, userId }) => {
+    const msg = new MessageModel({
+      text,
+      user: userId,
+      roomId,
+    })
+
+    msg.save().then(async () => {
+      const res = await MessageModel.find({ roomId })
+      io.to(roomId).emit('get-message', {
+        // message: result
+        message: res
+      })
+    })
+  })
+})
+//-----------------------------------------------------------------------------------------------------------------//
+
+
 
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
@@ -35,6 +92,7 @@ app.use(cors())
 mongoose.connect(process.env.MONGO_DB_URL)
   .then(() => console.log('DB ok'))
   .catch((err) => console.log("DB err", err))
+
 
 app.post('/register', register)
 app.post('/login', login)
@@ -78,14 +136,11 @@ app.get('/comments/:id', getCommentsByPostId)
 
 
 //-----------------------------------------------------------------
-app.post('/chat', createChat)
+app.post('/chats', createChat)
 
-app.get('/chat/:id', getMsgs)
-app.get('/chat', getUserChat)
+app.get('/chats/:id', getMsgs)
+
+app.get('/users/:userId/chats', getUserChat)
 
 app.post('/messages', checkAuth, createMsg)
 
-
-app.listen(port, () => {
-  console.log(`Server listen on ${port} port`)
-})

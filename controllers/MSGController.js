@@ -1,6 +1,5 @@
 import MessageModel from "../models/Message.js";
 
-
 export const createMsg = async (req, res) => {
   try {
 
@@ -29,6 +28,7 @@ export const createMsg = async (req, res) => {
     })
   }
 }
+
 
 export const getMsgs = async (req, res) => {
   try {

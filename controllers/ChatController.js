@@ -1,10 +1,18 @@
 import ChatModel from '../models/Chat.js'
 import MessageModel from '../models/Message.js'
 
+
 export const createChat = async (req, res) => {
   try {
     const { userOne, userTwo } = req.body
-    const repeat = await ChatModel.findOne({ userOne, userTwo })
+    // const repeat = await ChatModel.findOne({ userOne, userTwo })
+    // { $or: [{ userOne: userId }, { userTwo: userId }] }
+    const repeat = await ChatModel.findOne({
+      $or: [
+        { userOne: userOne, userTwo: userTwo },
+        { userOne: userTwo, userTwo: userOne }
+      ]
+    })
 
     if (repeat) {
       return res.json({
@@ -41,11 +49,14 @@ export const createChat = async (req, res) => {
   }
 }
 
-export const getUserChat = async (req, res) => {
-  try {
-    const { userId } = req.body
 
-    const chats = await ChatModel.find({ $or: [{ userOne: userId }, { userTwo: userId }] })
+
+export const getUserChat = async (req, res) => {
+
+  try {
+    const { userId } = req.params
+
+    const chats = await ChatModel.find({ $or: [{ userOne: userId }, { userTwo: userId }] }).populate('userOne', 'name').populate('userTwo', 'name')
 
     res.json({
       chats,
