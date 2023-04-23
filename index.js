@@ -1,7 +1,7 @@
 import express from 'express'
 import mongoose from "mongoose"
 import cors from 'cors'
-import { changeMe, checkMe, getUser, login, register } from './controllers/UserController.js'
+import { followOnUser, deleteFollowOnUser, changeMe, checkMe, getUser, login, register, getAllUsers, getFamousePeople } from './controllers/UserController.js'
 import { checkAuth } from './utils/checkAuth.js'
 import { changeNote, createNote, getAll, getOne, removeNote } from './controllers/NoteController.js'
 import { changePost, createPost, getAllPosts, getMyPosts, getNewPosts, getOnePost, getPopularPosts, getPostsByTags, getTags, getUserPosts, removePost } from './controllers/PostController.js'
@@ -9,7 +9,7 @@ import { changeComment, createComment, deleteComment, getCommentsByPostId } from
 import multer from 'multer'
 // import env from 'process'
 import * as dotenv from 'dotenv'
-import { createChat, getUserChat } from './controllers/ChatController.js'
+import { createChat, deleteChat, getUserChat } from './controllers/ChatController.js'
 import { createMsg, getMsgs } from './controllers/MSGController.js'
 import { Server } from "socket.io"
 
@@ -107,6 +107,8 @@ app.post('/uploads', checkAuth, upload.single('image'), (req, res) => {
 })
 
 app.patch('/user/:id', checkAuth, changeMe)
+app.patch('/user/:userId/follow/:followUserId', checkAuth, followOnUser)
+app.delete('/user/:userId/follow/:followUserId', checkAuth, deleteFollowOnUser)
 app.get('/user/:id', getUser)
 app.get('/user/posts/:id', getUserPosts)
 
@@ -137,10 +139,15 @@ app.get('/comments/:id', getCommentsByPostId)
 
 //-----------------------------------------------------------------
 app.post('/chats', createChat)
+app.delete('/chats/:id', deleteChat)
 
-app.get('/chats/:id', getMsgs)
+// app.get('/chats/:id', getMsgs)
 
 app.get('/users/:userId/chats', getUserChat)
+
+app.get('/users', getAllUsers)
+app.get('/users/famouse', getFamousePeople)
+app.get('/users/:name', getAllUsers)
 
 app.post('/messages', checkAuth, createMsg)
 

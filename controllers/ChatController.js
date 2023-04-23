@@ -5,8 +5,6 @@ import MessageModel from '../models/Message.js'
 export const createChat = async (req, res) => {
   try {
     const { userOne, userTwo } = req.body
-    // const repeat = await ChatModel.findOne({ userOne, userTwo })
-    // { $or: [{ userOne: userId }, { userTwo: userId }] }
     const repeat = await ChatModel.findOne({
       $or: [
         { userOne: userOne, userTwo: userTwo },
@@ -41,6 +39,23 @@ export const createChat = async (req, res) => {
         asd: "sdas"
       })
     }
+
+  } catch (err) {
+    res.status(500).json({
+      msg: 'Failed create chat!'
+    })
+  }
+}
+
+export const deleteChat = async (req, res) => {
+  try {
+    const { id } = req.params
+    await ChatModel.findOneAndDelete({
+      _id: id
+    })
+    res.json({
+      success: true,
+    })
 
   } catch (err) {
     res.status(500).json({
