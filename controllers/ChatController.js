@@ -71,7 +71,9 @@ export const getUserChat = async (req, res) => {
   try {
     const { userId } = req.params
 
-    const chats = await ChatModel.find({ $or: [{ userOne: userId }, { userTwo: userId }] }).populate('userOne', 'name').populate('userTwo', 'name')
+    const chats = await ChatModel.find({ $or: [{ userOne: userId }, { userTwo: userId }] })
+      .populate({ path: 'userOne', select: ['name', 'color'] })
+      .populate({ path: 'userTwo', select: ['name', 'color'] })
 
     res.json({
       chats,
